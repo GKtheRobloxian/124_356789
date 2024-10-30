@@ -20,6 +20,7 @@ distToGo = 300
 lastChoice = " "
 randomChoice = " "
 obstacleChoices = ["wall", "door", " "]
+keysPress = ["w", "a", "s", "d"]
 
 def DrawDoor(distanceForDoor):
     global mazeDrawer
@@ -40,7 +41,7 @@ for i in range (30):
     distToGo = distance
     distTraveled = 0
     while (distTraveled < distance):
-        distGo = rnd.randint(0, math.pow(distToGo, 2))
+        distGo = rnd.randint(int(8 - 8 *(distTraveled/distance)), math.pow(distToGo, 2))
         distGo = int(math.sqrt(distGo))
         distTraveled += distGo
         distToGo -= distGo
@@ -49,27 +50,40 @@ for i in range (30):
             while (randomChoice == " "):
                 randomChoice = rnd.choice(obstacleChoices)
                 if (randomChoice == "wall"):
-                    if (i < 26 and (lastChoice == " " or lastChoice == "door")):
+                    if (i < 26):
                         DrawWall(pathWidth)
-                    lastChoice = "wall"
-                    obstacleChoices.pop()
-                    obstacleChoices.append("door")
                 else:
-                    if (distToGo >= pathWidth * 2 + 20 and (lastChoice == " " or lastChoice == "wall") and i > 2):
+                    if (distToGo >= pathWidth * 2 + 20 and i > 2):
                         doorDist = rnd.randint(10, int((distToGo - pathWidth * 2)/2))
                         DrawDoor(doorDist)
                         distToGo -= doorDist
                         distTraveled += doorDist
-                    lastChoice = "door"
-                    obstacleChoices.pop()
-                    obstacleChoices.append("wall")
     distance -= pathWidth / 2
     headingSet -= 90
     mazeDrawer.setheading(headingSet)
     randomChoice = " "
+mazeDrawer.hideturtle()
+
+mazeRunner = trtl.Turtle()
+mazeRunner.speed(0)
+mazeRunner.penup()
+
+def moveRunner(event):
+    global mazeRunner
+    if (event == "w"):
+        mazeRunner.setheading(90)
+    elif (event == "a"):
+        mazeRunner.setheading(180)
+    elif (event == "s"):
+        mazeRunner.setheading(270)
+    elif (event == "d"):
+        mazeRunner.setheading(0)
+    mazeRunner.forward(4)
 
 
 
 wn = trtl.Screen()
-
+for n in keysPress:
+  wn.onkeypress(lambda n=n: moveRunner(n), str(n))
+wn.listen()
 wn.mainloop()
